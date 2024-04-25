@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas Akhir Deden Jhulfa Mustafha</title>
+    <style>
+        form {
+            margin: 5px;
+            margin-left: 25px;
+        }
+
+        form label {
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 6px 6px;
+            margin: 8px;
+        }
+
+        button {
+            width: 30%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-left: 16px;
+        }
+
+        #search {
+            margin-top: 2px;
+            align-items: center;
+            margin-left: 10px;
+            display: inline-flex;
+            padding-left: 21px;
+        }
+
+        #patientList {
+            margin-top: 20px;
+            border: 1px solid black;
+            margin-left: 10px;
+            border-width: 35%;
+            padding-left: 10px;
+        }
+        #bpjs{
+            margin-left: 10px;
+            padding: 10px;
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        #hasil {
+            border: 1px solid black;
+            padding: 2px;
+            width: 100%;
+        }
+
+        @media only screen and (min-width: 600px) {
+            form {
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>RS. Anna Medika</h1>
+    <form id="patientForm">
+        <label for="id">ID Pasien</label><br>
+        <input id="id" type="text" /><button id="search" type="button" name="search" onclick="searchPasien()">Cari</button><br>
+        <label for="nama">Nama</label><br>
+        <input id="nama" type="text" /><br>
+        <label for="alamat">Alamat</label><br>
+        <input id="alamat" type="text" /><br>
+        <label for="penyakit">Penyakit</label><br>
+        <input id="penyakit" type="text" /><br>
+        <label for="no">Nomor Ruang</label><br>
+        <input id="no" type="text" /><br>
+        <label for="bpjs">BPJS</label><br>
+        <select id="bpjs" name="bpjs">
+            <option value="Tidak Menggunakan">Tidak Menggunakan</option>
+            <option value="Kelas I">Kelas I</option>
+            <option value="Kelas II">Kelas II</option>
+            <option value="Kelas III">Kelas III</option>
+        </select><br>
+        <label for="tgl_masuk">Tanggal Masuk</label><br>
+        <input id="tgl_masuk" type="date" /><br>
+        <label for="tgl_keluar">Tanggal Keluar</label><br>
+        <input id="tgl_keluar" type="date" /><br>
+    </form>
+    <button type="button" onclick="savePasien()">Save</button>
+    <button type="button" onclick="showPasien()">Show</button>
+    <button type="button" onclick="deletePasien()">Delete</button>
+
+    <div id="patientList"></div>
+
+    <script>
+         let patients = [];
+
+function savePasien() {
+    const patient = {
+        id: document.getElementById('id').value,
+        nama: document.getElementById('nama').value,
+        alamat: document.getElementById('alamat').value,
+        penyakit: document.getElementById('penyakit').value,
+        no: document.getElementById('no').value,
+        bpjs: document.getElementById('bpjs').value,
+        tgl_masuk: document.getElementById('tgl_masuk').value,
+        tgl_keluar: document.getElementById('tgl_keluar').value,
+    };
+    const existingPatient = patients.find(p => p.id === patient.id);
+
+    if (existingPatient) {
+        Object.assign(existingPatient, patient);
+    } else {
+        patients.push(patient);
+    }
+
+    clearForm();
+}
+
+function showPasien() {
+    const patientListDiv = document.getElementById('patientList');
+    patientListDiv.innerHTML = "<h2>Data Pasien:</h2>";
+
+    if (patients.length === 0) {
+        patientListDiv.innerHTML += "<p>No patients available.</p>";
+    } else {
+        patients.forEach(patient => {
+            patientListDiv.innerHTML += `
+                <p id="list-hasil">
+                    <table id="hasil" border="1">
+                        <tr align="center" style="background-color:green;">
+                            <td>ID Pasien :</td>
+                            <td>Nama :</td>
+                            <td>Alamat :</td>
+                            <td>Penyakit :</td>
+                            <td>Ruang :</td>
+                            <td>BPJS :</td>
+                            <td>Tanggal Masuk :</td>
+                            <td>Tanggal Keluar :</td>
+                        </tr>
+                        <tr align="center">
+                            <td>${patient.id}</td>
+                            <td>${patient.nama}</td>
+                            <td>${patient.alamat}</td>
+                            <td>${patient.penyakit}</td>
+                            <td>${patient.no}</td>
+                            <td>${patient.bpjs}</td>
+                            <td>${patient.tgl_masuk}</td>
+                            <td>${patient.tgl_keluar}</td>
+                        </tr>    
+                    </table>
+                </p>
+            `;
+        });
+    }
+}
+
+function searchPasien() {
+    const patientId = document.getElementById('id').value;
+    const patient = patients.find(p => p.id === patientId);
+    if (patient) {
+        document.getElementById('nama').value = patient.nama;
+        document.getElementById('alamat').value = patient.alamat;
+        document.getElementById('penyakit').value = patient.penyakit;
+        document.getElementById('no').value = patient.no;
+        document.getElementById('bpjs').value = patient.bpjs;
+        document.getElementById('tgl_masuk').value = patient.tgl_masuk;
+        document.getElementById('tgl_keluar').value = patient.tgl_keluar;
+    } else {
+        clearForm();
+        alert('Pasien tidak ditemukan!');
+    }
+}
+
+function deletePasien() {
+            
+            sessionStorage.removeItem("patientList");
+            localStorage.removeItem("patientList");
+            
+            document.getElementById('patientList').innerHTML = '';
+        }
+
+function saveData() {
+    console.log("Data saved:", patients);
+}
+
+function clearForm() {
+    document.getElementById('patientForm').reset();
+}
+    </script>
+</body>
+</html>
